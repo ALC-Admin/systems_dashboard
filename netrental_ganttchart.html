@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Netrental go-live plan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#F2F5F7;--card:#FFFFFF;--ink:#12263A;--mut:#5B6B7A;--line:#DDE4EA;--blue:#2F6FB5;--teal:#158A78;--amber:#D98B1F;--violet:#6B58C9;--slate:#7A8794;--coral:#E0605A;--red:#D23B3B;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1A24;--card:#162431;--ink:#E8EEF3;--mut:#9AABB9;--line:#26384A;--blue:#5A9AE0;--teal:#2FB59F;--amber:#E8A23C;--violet:#9B8BF0;--slate:#8F9CA8;--coral:#F07E78;--red:#F0605F}}
+:root[data-theme="dark"]{--bg:#0F1A24;--card:#162431;--ink:#E8EEF3;--mut:#9AABB9;--line:#26384A;--blue:#5A9AE0;--teal:#2FB59F;--amber:#E8A23C;--violet:#9B8BF0;--slate:#8F9CA8;--coral:#F07E78;--red:#F0605F}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+main{max-width:1080px;margin:0 auto;padding:32px 20px 48px}
+h1{font-size:30px;font-weight:600;letter-spacing:-0.01em;margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 24px;font-size:15px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tile b{display:block;font-size:22px;font-weight:600}
+.tile span{font-size:13px;color:var(--mut)}
+.tile.k{border-left:4px solid var(--red)}
+.tile.s{border-left:4px solid var(--slate)}
+.tile.g{border-left:4px solid var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 0 12px}
+.scroll{overflow-x:auto}
+.chart{min-width:860px;padding:0 16px}
+.row{display:grid;grid-template-columns:200px 1fr;align-items:center}
+.lab{padding:8px 12px 8px 0;font-size:14px;font-weight:500;line-height:1.3}
+.lab small{display:block;font-size:12px;font-weight:400;color:var(--mut)}
+.lab.s{padding-left:18px;color:var(--ink)}
+.lab.s:before{content:"";display:inline-block;width:8px;height:8px;border-left:1.5px solid var(--mut);border-bottom:1.5px solid var(--mut);margin:0 6px 2px -14px}
+.trk{position:relative;height:44px;border-top:1px solid var(--line)}
+.trk.s{background:color-mix(in srgb,var(--slate) 10%,transparent)}
+.gl{position:absolute;top:0;bottom:0;border-left:1px solid var(--line);opacity:.55}
+.gl.m{opacity:1}
+.bar{position:absolute;top:12px;height:20px;border-radius:4px;min-width:8px}
+.dia{position:absolute;top:13px;width:18px;height:18px;margin-left:-9px;transform:rotate(45deg);background:var(--ink);border-radius:2px}
+.mh{position:relative;height:50px}
+.mh span{position:absolute;top:0;font-size:13px;font-weight:600;padding-left:6px}
+.nm{position:absolute;top:0;bottom:0;pointer-events:none}
+.nm i{position:absolute;top:46px;bottom:0;border-left:2px solid var(--red)}
+.nm em{position:absolute;top:26px;font-style:normal;font-size:12px;font-weight:600;color:var(--red);transform:translateX(-50%);white-space:nowrap;background:var(--card);padding:0 4px}
+.today{position:absolute;top:46px;bottom:0;border-left:1.5px dashed var(--mut)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 16px 0;font-size:13px;color:var(--mut)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+</style>
+</head>
+<body>
+<main>
+<h1>Netrental go-live plan</h1>
+<p class="sub">20 October 2026 to 18 January 2027</p>
+<div class="tiles">
+<div class="tile k"><b>4 Dec</b><span>Go/no-go: is the business ready to go live?</span></div>
+<div class="tile s"><b>23 Dec – 4 Jan</b><span>Shut down period, some activity continues</span></div>
+<div class="tile g"><b>18 Jan</b><span id="cd">Go-live</span></div>
+</div>
+<div class="card"><div class="scroll"><div class="chart" id="c"></div></div>
+<div class="legend">
+<span><i style="background:var(--blue)"></i>Process</span>
+<span><i style="background:var(--teal)"></i>Data</span>
+<span><i style="background:var(--amber)"></i>Training</span>
+<span><i style="background:var(--violet)"></i>Testing</span>
+<span><i style="background:var(--slate)"></i>Shut down</span>
+<span><i style="background:var(--coral)"></i>Soft launch</span>
+</div></div>
+</main>
+<script>
+var T=98,start=new Date(2026,9,20);
+function p(d){return (d/T*100).toFixed(3)+"%"}
+var months=[["October",0,12],["November",12,30],["December",42,31],["January",73,25]];
+var rows=[
+["Business process map","20 Oct – 3 Nov",0,14,"blue"],
+["Data cleansing","20 Oct – 27 Nov",0,38,"teal"],
+["Business training","3 Nov – 4 Dec",14,31,"amber"],
+["Business unit testing","3 Nov – 4 Dec",14,31,"violet"],
+["End-to-end UAT","4 Dec",45,1,"violet"],
+["Data preparation","7 – 23 Dec",48,17,"teal"],
+["Shut down period","23 Dec – 4 Jan",64,13,"slate"],
+["Data load and verification","28 – 31 Dec, no new trial or hire sales",69,4,"teal",1],
+["Soft launch and hypercare","4 – 15 Jan, fix production bugs",76,12,"coral"],
+["Go-live","18 Jan",90,0,"dia"]
+];
+var g="";
+for(var w=7;w<T;w+=7){g+='<div class="gl" style="left:'+p(w)+'"></div>'}
+months.slice(1).forEach(function(m){g+='<div class="gl m" style="left:'+p(m[1])+'"></div>'});
+var h='<div style="position:relative"><div class="row"><div></div><div class="mh">'+months.map(function(m,i){return '<span style="left:'+p(m[1])+'">'+m[0]+'</span>'}).join("")+'</div></div>';
+rows.forEach(function(r){
+var s=r[5]?" s":"";
+var m=r[4]=="dia"?'<div class="dia" style="left:'+p(r[2]+0.5)+'" title="Go-live, 18 Jan"></div>':'<div class="bar" style="left:'+p(r[2])+';width:'+p(r[3])+';background:var(--'+r[4]+')" title="'+r[0]+': '+r[1]+'"></div>';
+h+='<div class="row"><div class="lab'+s+'">'+r[0]+'<small>'+r[1]+'</small></div><div class="trk'+s+'">'+g+m+'</div></div>';
+});
+var td=Math.floor((new Date().setHours(0,0,0,0)-start)/864e5);
+var tl=td>=0&&td<T?'<div class="today" style="left:'+p(td)+'" title="Today"></div>':"";
+h+='<div class="nm" style="left:200px;right:0"><div style="position:relative;height:100%"><em style="left:'+p(45)+'">Go/no-go, 4 Dec</em><i style="left:'+p(45.5)+'"></i>'+tl+'</div></div></div>';
+document.getElementById("c").innerHTML=h;
+var left=Math.ceil((new Date(2027,0,18)-new Date().setHours(0,0,0,0))/864e5);
+if(left>0)document.getElementById("cd").textContent="Go-live, "+left+" days from today";
+</script>
+</body>
+</html>
