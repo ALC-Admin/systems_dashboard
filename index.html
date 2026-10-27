@@ -100,7 +100,7 @@ h2.sec{border-left:4px solid var(--acc);padding-left:10px}
 </div>
 <script>
 const TODAY=new Date("2026-10-21T00:00:00");
-const LINKS={"NetRental":"netrental_ganttchart.html"};
+const LINKS={"NetRental":"netrental_ganttchart.html","Role Review":"role_review.html"};
 const D=[
 ["NetRental","2026-07-13","2027-01-18","NR (Project Jiras)","","Saf","High",""],
 ["Role Review","2026-08-10","2027-06-30","NS-19","Ongoing – ad hoc","Systems","High","Need to free up Full License. Warehouse Operators review is done. Currently reviewing Sales role"],
@@ -150,7 +150,7 @@ let m="",c=new Date(lo);const step=sp>400*864e5?3:1;while(c<hi){m+=`<i style="le
 const rows=v.sort((a,b)=>a.start.localeCompare(b.start)).map(x=>{const s=dt(x.start),e=x.end?dt(x.end):new Date(s.getTime()+75*864e5),l=pc(s),w=Math.max(pc(e)-l,.8);
 return `<div class="tl-row"><div class="nm" title="${esc(x.name)}">${LINKS[x.name]?`<a class="lnk" href="${LINKS[x.name]}" target="_blank" rel="noopener">${esc(x.name)} ↗</a>`:esc(x.name)}</div><div class="track"><div class="pb${x.end?"":" open"} ${x.stage==="Scheduled"?"sch":x.stage==="Waiting on business"?"wait":""}" style="left:${l}%;width:${w}%"><span>${fmt(x.start)} → ${x.end?fmt(x.end):"TBC"}</span></div></div></div>`}).join("");
 $("#tl").innerHTML=`<div class="tl-head"><div></div><div class="months">${m}</div></div><div style="position:relative">${rows}<div style="position:absolute;left:210px;right:0;top:0;bottom:0;pointer-events:none"><div class="today" style="left:${pc(TODAY)}%"><em>Today</em></div></div></div>`}
-const row=x=>`<tr data-id="${x.id}"><td><b>${esc(x.name)}</b>${x.jira?` <span class="chip jira">${esc(x.jira)}</span>`:""}</td><td>${esc(x.owner)}</td>
+const row=x=>`<tr data-id="${x.id}"><td><b>${LINKS[x.name]?`<a class="lnk" href="${LINKS[x.name]}" target="_blank" rel="noopener">${esc(x.name)} ↗</a>`:esc(x.name)}</b>${x.jira?` <span class="chip jira">${esc(x.jira)}</span>`:""}</td><td>${esc(x.owner)}</td>
 <td><select data-f="pri">${["","High","Medium","Low"].map(p=>`<option value="${p}" ${x.pri===p?"selected":""}>${p||"None"}</option>`).join("")}</select></td>
 <td><input type="date" data-f="start" value="${x.start}"></td><td><input type="date" data-f="end" value="${x.end}"></td>
 <td><select data-f="stage">${ST.map(s=>`<option ${x.stage===s?"selected":""}>${s}</option>`).join("")}</select></td>
